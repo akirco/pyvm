@@ -37,17 +37,19 @@ function Repair-Url {
 function Get-Config {
   $Python_Mirror = if ($env:Python_Mirror) { $env:Python_Mirror } else { "https://www.python.org/ftp/python/" }
   $GPG_Key_ID = if ($env:GPG_Key_ID) { $env:GPG_Key_ID } else { "FC624643487034E5" } # Default key ID
+  $Root_Path = Get-Target -Path $(Repair-Path -Path (Join-Path $PSScriptRoot ".."))
   $CONFIG = @{
     Python_Mirror = $Python_Mirror
     GPG_Key_ID    = $GPG_Key_ID
-    Dark_Path     = Repair-Path -Path $(Join-Path $PSScriptRoot "..\bin\wix\dark.exe")
-    Logs_Dir      = Repair-Path -Path $(Join-Path $PSScriptRoot "..\logs")
-    Python_Dir    = Repair-Path -Path $(Join-Path $PSScriptRoot "..\python")
-    Venv_Dir      = Repair-Path -Path $(Join-Path $PSScriptRoot "..\python\venvs")
-    Current_Dir   = Repair-Path -Path $(Join-Path $PSScriptRoot "..\python\current")
-    Cache_Dir     = Repair-Path -Path $(Join-Path $PSScriptRoot "..\python\caches")
-    Version_Dir   = Repair-Path -Path $(Join-Path $PSScriptRoot "..\python\$version")
-    Tmp_Dir       = Repair-Path -Path $(Join-Path $PSScriptRoot "..\python\tmp")
+    Root_Path     = $Root_Path
+    Dark_Path     = Repair-Path -Path $(Join-Path $Root_Path "bin\wix\dark.exe")
+    Logs_Dir      = Repair-Path -Path $(Join-Path $Root_Path "logs")
+    Python_Dir    = Repair-Path -Path $(Join-Path $Root_Path "python")
+    Venv_Dir      = Repair-Path -Path $(Join-Path $Root_Path "python\venvs")
+    Current_Dir   = Repair-Path -Path $(Join-Path $Root_Path "python\current")
+    Cache_Dir     = Repair-Path -Path $(Join-Path $Root_Path "python\caches")
+    Version_Dir   = Repair-Path -Path $(Join-Path $Root_Path "python\$version")
+    Tmp_Dir       = Repair-Path -Path $(Join-Path $Root_Path "python\tmp")
   }
   return $CONFIG
 }
