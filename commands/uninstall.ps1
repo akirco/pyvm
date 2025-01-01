@@ -26,9 +26,8 @@ if ($installed_versions -contains $version) {
   Write-Host "Uninstalling Python $version..." -ForegroundColor Cyan
 
   # Check for running processes
-  $pythonExePath = Join-Path $current_dir "python.exe"
 
-  $runningProcesses = Get-Process | Where-Object { $_.Path -eq $pythonExePath } -ErrorAction SilentlyContinue
+  $runningProcesses = Get-Process -Name "python" -ErrorAction SilentlyContinue
 
   if ($runningProcesses) {
     Write-Host "The following processes are using Python $version :" -ForegroundColor Yellow
