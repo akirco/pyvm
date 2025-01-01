@@ -1,4 +1,8 @@
+. $PSScriptRoot\..\lib\helper.ps1
+
 $subCommand = $args[0]
+
+
 
 function Show-MainHelp {
     Write-Host "pyvm - Python Version Manager" -f Blue
@@ -9,7 +13,7 @@ function Show-MainHelp {
     Write-Host "Commands:" -f Black
     Write-Host "  install    Install a Python version using python-build"
     Write-Host "  list       List all installed and used versions"
-    Write-Host "  latest     Print the latest installed or known version with the given prefix"
+    Write-Host "  venv       Create a virtual environment using the specified Python version"
     Write-Host "  mirror     Set python-build mirror"
     Write-Host "  use        Use a Python version"
     Write-Host "  uninstall  Uninstall a Python version"
@@ -38,12 +42,13 @@ function Show-ListHelp {
     Write-Host "  --local      Show installed local versions (default)"
 }
 
-function Show-LatestHelp {
+function Show-VenvHelp {
     Write-Host "Usage:" -f Black
-    Write-Host "  pyvm latest <prefix>" -f Black
+    Write-Host "  pyvm venv <version> [venv_path]" -f Black
     Write-Host ""
     Write-Host "Examples:" -f Black
-    Write-Host "  pyvm latest 3.9    # Print the latest version with prefix 3.9 (e.g. 3.9.13)"
+    Write-Host "  pyvm venv 3.9.3    # Create a virtual environment using Python 3.9.3"
+    Write-Host "  venv_path, default is $(Get-Config | Select-Object -ExpandProperty Venv_Dir)"
 }
 
 function Show-MirrorHelp {
@@ -78,36 +83,36 @@ if ($null -eq $subCommand) {
 }
 
 switch ($subCommand) {
-    "install" { 
-        Show-InstallHelp 
+    "install" {
+        Show-InstallHelp
         exit 0
     }
-    "list" { 
-        Show-ListHelp 
+    "list" {
+        Show-ListHelp
         exit 0
     }
-    "latest" { 
-        Show-LatestHelp 
+    "venv" {
+        Show-VenvHelp
         exit 0
     }
-    "mirror" { 
-        Show-MirrorHelp 
+    "mirror" {
+        Show-MirrorHelp
         exit 0
     }
-    "use" { 
-        Show-UseHelp 
+    "use" {
+        Show-UseHelp
         exit 0
     }
-    "uninstall" { 
-        Show-UninstallHelp 
+    "uninstall" {
+        Show-UninstallHelp
         exit 0
     }
-    "help" { 
-        Show-UseHelp 
+    "help" {
+        Show-UseHelp
         exit 0
     }
-    Default { 
-        Show-MainHelp 
+    Default {
+        Show-MainHelp
         exit 0
     }
 }

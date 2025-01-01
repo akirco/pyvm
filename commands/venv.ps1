@@ -9,7 +9,13 @@ if ($args.Length -eq 0 -or [string]::IsNullOrWhiteSpace($args[0])) {
 $version = Test-Version $args[0]
 
 # Determine the virtual environment path
-$venvPath = if ($args.Length -gt 1) { $args[1] } else { Get-Config | Select-Object -ExpandProperty Venv_Dir }
+$venvPath = if ($args.Length -gt 1) { $args[1] } else {
+  $venv_dir = Get-Config | Select-Object -ExpandProperty Venv_Dir
+  Join-Path $venv_dir $version $(Get-Date -f "yyyyMMddHHmmss")
+}
+
+
+
 
 # Verify the Python version
 $pythonInfo = Get-Python -PythonPath (Get-Config | Select-Object -ExpandProperty Python_Dir | Join-Path -ChildPath $version)

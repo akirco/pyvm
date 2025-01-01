@@ -43,7 +43,7 @@ function Get-Config {
     Dark_Path     = Repair-Path -Path $(Join-Path $PSScriptRoot "..\bin\wix\dark.exe")
     Logs_Dir      = Repair-Path -Path $(Join-Path $PSScriptRoot "..\logs")
     Python_Dir    = Repair-Path -Path $(Join-Path $PSScriptRoot "..\python")
-    Venv_Dir      = Repair-Path -Path $(Join-Path $PSScriptRoot "..\python\venvs\$version_$((Get-Date).ToString('yyyyMMddHHmmss'))")
+    Venv_Dir      = Repair-Path -Path $(Join-Path $PSScriptRoot "..\python\venvs")
     Current_Dir   = Repair-Path -Path $(Join-Path $PSScriptRoot "..\python\current")
     Cache_Dir     = Repair-Path -Path $(Join-Path $PSScriptRoot "..\python\caches")
     Version_Dir   = Repair-Path -Path $(Join-Path $PSScriptRoot "..\python\$version")
@@ -353,7 +353,7 @@ function Test-Version {
         $_.Version
       }
 
-      $has_cached_version = Get-Config | Select-Object -ExpandProperty Cache_Dir -ErrorAction Ignore | Get-ChildItem -Filter "python-$Version-amd64.exe" | Where-Object { $_.Name -match "^python-$Version-amd64.exe$" }
+      $has_cached_version = Get-Config | Select-Object -ExpandProperty Cache_Dir -ErrorAction Ignore | Get-ChildItem -Filter "python-$Version-amd64.exe" -ErrorAction Ignore | Where-Object { $_.Name -match "^python-$Version-amd64.exe$" }
 
       # Check if the version is installed and is valid
       if ($installed_versions -contains $Version -and (Get-InstalledPython | Where-Object { $_.Version -eq $Version }).IsValid) {
