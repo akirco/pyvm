@@ -1,3 +1,21 @@
+
+## Tips
+
+> It's in development, and if you want vscode to recognize the python interpreter, you can run:
+> ```
+>  scoop shim add python "$(scoop prefix pyvm)\python\current\python.exe"
+> ```
+
+
+## install
+
+```
+scoop bucket add aki https://github.com/akirco/aki-apps.git
+scoop install aki/pyvm
+```
+
+## usage
+
 ```
 pyvm - Python Version Manager
 
