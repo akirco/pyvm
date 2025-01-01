@@ -35,8 +35,10 @@ function Repair-Url {
 
 
 function Get-Config {
-  $Python_Mirror = if ($env:Python_Mirror) { $env:Python_Mirror } else { "https://www.python.org/ftp/python/" }
-  $GPG_Key_ID = if ($env:GPG_Key_ID) { $env:GPG_Key_ID } else { "FC624643487034E5" } # Default key ID
+  $mirror_url = [Environment]::GetEnvironmentVariable("Python_Mirror", "User")
+  $gpg_key_id = [Environment]::GetEnvironmentVariable("GPG_Key_ID", "User")
+  $Python_Mirror = if ($mirror_url) { $mirror_url } else { "https://www.python.org/ftp/python/" }
+  $GPG_Key_ID = if ($gpg_key_id) { $gpg_key_id } else { "FC624643487034E5" } # Default key ID
   $Root_Path = Get-Target -Path $(Repair-Path -Path (Join-Path $PSScriptRoot ".."))
   $CONFIG = @{
     Python_Mirror = $Python_Mirror
