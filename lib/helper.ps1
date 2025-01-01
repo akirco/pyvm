@@ -125,7 +125,7 @@ function Expand-DarkArchive {
     $DarkPath = Get-Config | Select-Object -ExpandProperty Dark_Path
     $dark_error_log = Get-Config | Select-Object -ExpandProperty Logs_Dir | Join-Path -ChildPath "dark_error.log"
     $installed_timedate = Get-Date -Format "yyyy-MM-dd-HH-mm-ss"
-    $install_log = Get-Config | Select-Object -ExpandProperty Logs_Dir | Join-Path -ChildPath $installed_timedate
+    $install_log = Get-Config | Select-Object -ExpandProperty Logs_Dir | Join-Path -ChildPath "$installed_timedate.log"
     New-Item -Path $dark_error_log -ItemType File -Force | Out-Null
     New-Item -Path $install_log -ItemType File -Force | Out-Null
     if (-not (Test-Path $DarkPath)) {

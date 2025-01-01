@@ -1,5 +1,7 @@
 . $PSScriptRoot\..\lib\helper.ps1
 
+$current_dir = fname $PWD.Path
+
 # Check if the version argument is provided
 if ($args.Length -eq 0 -or [string]::IsNullOrWhiteSpace($args[0])) {
   Write-Host "Usage: pyvm venv <version> [venvPath]" -ForegroundColor Yellow
@@ -11,7 +13,7 @@ $version = Test-Version $args[0]
 # Determine the virtual environment path
 $venvPath = if ($args.Length -gt 1) { $args[1] } else {
   $venv_dir = Get-Config | Select-Object -ExpandProperty Venv_Dir
-  Join-Path $venv_dir $version $(Get-Date -f "yyyyMMddHHmmss")
+  Join-Path $venv_dir $version "$current_dir-$(Get-Date -f "yyyyMMddHHmmss")"
 }
 
 

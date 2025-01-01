@@ -31,7 +31,7 @@ try {
     $X64_Url = Repair-Url $download_mirror "$version/$X64_Name"
 
     if (-not (Test-Path $Cached_Version_Path)) {
-        Write-Host "Downloading Python $version from $X64_Url"
+        Write-Host "Downloading Python version $version (64-bit)..."
         if (-not (Get-RemoteFile -Url $X64_Url -OutFile $Cached_Version_Path)) {
             throw "Failed to download Python $version"
         }
@@ -43,11 +43,11 @@ try {
         }
     }
     else {
-        Write-Host "Using cached installer: $(fname $Cached_Version_Path)"
+        Write-Host "Loading $(fname $Cached_Version_Path) from cache..."
         Write-Host "Verifying cached file signature..."
         if (-not (Test-Signature -FilePath $Cached_Version_Path -Version $version -DownloadMirror $download_mirror)) {
             Remove-Item $Cached_Version_Path -ErrorAction SilentlyContinue
-            throw "Cached file signature verification failed. Please try downloading again."
+            throw "Cached file signature verification failed. Please try installing again."
         }
     }
 
@@ -56,6 +56,7 @@ try {
     }
 
     Write-Host "Extracting Python installer..."
+
     Expand-DarkArchive $Cached_Version_Path $tmp_dir
 
     @('path.msi', 'pip.msi') | ForEach-Object {
@@ -65,7 +66,7 @@ try {
         }
     }
 
-    Write-Host "Installing Python components..."
+    # Write-Host "Installing Python components..."
     $msiFiles = Get-ChildItem (Join-Path $tmp_dir "AttachedContainer\*.msi")
 
     foreach ($msiFile in $msiFiles) {
@@ -73,10 +74,13 @@ try {
         Expand-MsiArchive $msiFile.FullName $installed_dir
     }
 
+    Write-Host "Installing pip..."
+
     Get-Pip $version
 
     Write-Host "Python $version has been successfully installed." -ForegroundColor Green
     Write-Host "If you want to use this version, type:" -ForegroundColor Green
+    Write-Host ""
     Write-Host "  pyvm use $version" -ForegroundColor Green
 }
 catch {
