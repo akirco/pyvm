@@ -54,6 +54,19 @@ function Get-Config {
   return $CONFIG
 }
 
+function Get-Target {
+  param (
+    [Parameter(Mandatory = $true)]
+    [string]$Path
+  )
+  $link_type = Get-Item $Path | Select-Object -ExpandProperty LinkType -ErrorAction SilentlyContinue
+  if ($link_type -eq "SymbolicLink" -or $link_type -eq "Junction" -or $link_type -eq "HardLink") {
+    $target = (Get-Item $Path).LinkTarget
+    return $target
+  }
+  return $Path
+}
+
 
 
 function fname($path) { split-path $path -leaf }
