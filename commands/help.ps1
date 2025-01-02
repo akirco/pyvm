@@ -11,12 +11,12 @@ function Show-MainHelp {
     Write-Host "  pyvm <command> [<args>]" -f Black
     Write-Host ""
     Write-Host "Commands:" -f Black
-    Write-Host "  install    Install a Python version using python-build"
-    Write-Host "  list       List all installed and used versions"
+    Write-Host "  install    Install the specified python version"
+    Write-Host "  list       List the python installations. Type '--remote' to see what versions can be installed"
     Write-Host "  venv       Create a virtual environment using the specified Python version"
-    Write-Host "  mirror     Set python-build mirror"
-    Write-Host "  use        Use a Python version"
-    Write-Host "  uninstall  Uninstall a Python version"
+    Write-Host "  mirror     Cat or set python installer mirror"
+    Write-Host "  use        Set the specified version to be used in global,like 'nvm use'"
+    Write-Host "  uninstall  Uninstall the specified python version"
     Write-Host "  help       Print this message or the help of the given subcommand(s)"
     Write-Host ""
     Write-Host "Options:" -f Black
@@ -30,7 +30,6 @@ function Show-InstallHelp {
     Write-Host ""
     Write-Host "Examples:" -f Black
     Write-Host "  pyvm install 3.9.0    # Install Python 3.9.0"
-    Write-Host "  pyvm install latest   # Install the latest version"
 }
 
 function Show-ListHelp {
@@ -48,7 +47,10 @@ function Show-VenvHelp {
     Write-Host ""
     Write-Host "Examples:" -f Black
     Write-Host "  pyvm venv 3.9.3    # Create a virtual environment using Python 3.9.3"
+    Write-Host ""
+    Write-Host "Tips:" -f Black
     Write-Host "  venv_path, default is $(Get-Config | Select-Object -ExpandProperty Venv_Dir)"
+    Write-Host "  this command is a experimental function,will be dropped."
 }
 
 function Show-MirrorHelp {
@@ -56,7 +58,7 @@ function Show-MirrorHelp {
     Write-Host "  pyvm mirror <mirror>" -f Black
     Write-Host ""
     Write-Host "Examples:" -f Black
-    Write-Host "  pyvm mirror https://www.example.com/python-build    # Set the mirror to https://www.example.com/python-build"
+    Write-Host "  pyvm mirror https://www.example.com/mirror    # Set the mirror to https://www.example.com/mirror"
 }
 
 function Show-UseHelp {
@@ -108,7 +110,7 @@ switch ($subCommand) {
         exit 0
     }
     "help" {
-        Show-UseHelp
+        Show-MainHelp
         exit 0
     }
     Default {

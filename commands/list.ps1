@@ -5,8 +5,9 @@ $option = $args[0]
 function Get-Remote {
     $Python_Mirror = Get-Config | Select-Object -ExpandProperty Python_Mirror
 
-    $response = Invoke-WebRequest -Uri $Python_Mirror
-
+    #ban the progress bar
+    $ProgressPreference = "SilentlyContinue"
+    $response = Invoke-WebRequest -Uri $Python_Mirror -UseBasicParsing
     $versions = [regex]::Matches($response.Content, '<a href="(\d+\.\d+\.\d+)/"') | ForEach-Object { $_.Groups[1].Value } | Where-Object { $_ -match '^\d+\.\d+\.\d+$' } | Sort-Object -Property { [version]$_ } -Descending
 
     $groupedVersions = $versions | Group-Object { $_.Split('.')[0] }

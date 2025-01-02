@@ -73,7 +73,6 @@ function Get-Target {
 
 function fname($path) { split-path $path -leaf }
 
-
 function movedir($from, $to) {
   $from = $from.trimend('\')
   $to = $to.trimend('\')
@@ -443,13 +442,13 @@ function Test-Signature {
     }
 
     # Verify signature using GPG
-    Write-Host "Verifying GPG signature..."
+    Write-Host "Verifying GPG signature..." -NoNewline
     $result = & gpg --verify $ascPath $FilePath 2>&1
     if ($LASTEXITCODE -ne 0) {
       throw "GPG signature verification failed: $result"
     }
 
-    Write-Host "Signature verification successful" -ForegroundColor Green
+    Write-Host "ok" -ForegroundColor Green
     return $true
   }
   catch {
@@ -459,4 +458,31 @@ function Test-Signature {
   finally {
     Remove-Item $ascPath -ErrorAction SilentlyContinue
   }
+}
+
+function Test-RunningProcesses {
+  param(
+    [string]$Version
+  )
+  $pyexe = Get-Config | Select-Object -ExpandProperty Python_Dir | Join-Path -ChildPath $Version | Join-Path -ChildPath "python.exe"
+  $pipexe = Get-Config | Select-Object -ExpandProperty Python_Dir | Join-Path -ChildPath $Version | Join-Path -ChildPath "Scripts\pip.exe"
+  $runningProcesses = Get-Process | Where-Object { $_.Path -eq $pyexe } -ErrorAction SilentlyContinue
+  $runningProcesses += Get-Process | Where-Object { $_.Path -eq $pipexe } -ErrorAction SilentlyContinue
+  if ($runningProcesses) {
+    Write-Host "The following processes are using Python $Version :" -ForegroundColor Red
+    $runningProcesses | ForEach-Object { Write-Host "  - $($_.Name) (PID: $($_.Id))" -ForegroundColor Green }
+    Write-Host "Please close the processes and try again."
+    exit 1
+  }
+}
+
+function Test-IsUsing {
+  param (
+    [string]$Version
+  )
+  $current_version = Get-CurrentPython | Select-Object -ExpandProperty Version
+  if ($current_version -eq $Version) {
+    return $true
+  }
+  return $false
 }

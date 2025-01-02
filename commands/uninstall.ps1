@@ -8,55 +8,42 @@ if ($args.Length -eq 0 -or [string]::IsNullOrWhiteSpace($args[0])) {
 
 $version = Test-Version $args[0]
 
+Test-RunningProcesses $version
+
+
 $installed_versions = Get-InstalledPython | ForEach-Object {
   $_.Version
 }
 
 $CONFIG = Get-Config
 
-$current_version = Get-CurrentPython | Select-Object -ExpandProperty Version
-
-$current_dir = $CONFIG | Select-Object -ExpandProperty Current_Dir
-
 $version_dir = $CONFIG | Select-Object -ExpandProperty Python_Dir | Join-Path -ChildPath $version
 
+$current_dir = $CONFIG | Select-Object -ExpandProperty Current_Dir
 
 
 if ($installed_versions -contains $version) {
   Write-Host "Uninstalling Python $version..." -ForegroundColor Cyan
+  try {
 
-  # Check for running processes
+    Remove-Item -Path $version_dir -Recurse -Force -ErrorAction Ignore
 
-  $runningProcesses = Get-Process -Name "python" -ErrorAction SilentlyContinue
+    $is_currnet = Test-IsUsing $version
 
-  if ($runningProcesses) {
-    Write-Host "The following processes are using Python $version :" -ForegroundColor Yellow
-    $runningProcesses | ForEach-Object { Write-Host "  - $($_.Name) (PID: $($_.Id))" }
-    Write-Host "Please close the processes and try again." -ForegroundColor Yellow
+    if ($is_currnet) {
+      Remove-Item $current_dir -Recurse -Force -ErrorAction Ignore
+    }
+  }
+  catch {
+    Write-Host "Failed to uninstall Python $version." -ForegroundColor Red
+    Write-Host "Please mauanlly remove the directory: $version_dir" -ForegroundColor Yellow
     exit 1
   }
-
-  if ($current_version -eq $version) {
-    # ask user weather to remove the current version
-    Write-Host "Python $version is the current used version." -ForegroundColor Yellow
-    $response = Read-Host "Do you want to remove the current version? (y/n)"
-    if ($response.ToLower() -eq "y") {
-      Remove-Item -Path $current_dir -Recurse -Force -ErrorAction SilentlyContinue
-      Remove-Item -Path $version_dir -Recurse -Force -ErrorAction SilentlyContinue
-    }
-    else {
-      Write-Host "Uninstall aborted." -ForegroundColor Yellow
-      exit 1
-    }
+  finally {
+    Write-Host "Python $version has been uninstalled." -ForegroundColor Green
   }
-  else {
-    Remove-Item -Path $version_dir -Recurse -Force -ErrorAction SilentlyContinue
-  }
-
-
-  Write-Host "Python $version uninstalled." -ForegroundColor Green
-  exit
 }
-Write-Host "Python $version is not installed. Type "pyvm list" to see what is installed." -ForegroundColor Yellow
-
+else {
+  Write-Host "Python $version is not installed. Type "pyvm list" to see what is installed." -ForegroundColor Yellow
+}
 

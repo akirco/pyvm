@@ -8,19 +8,21 @@ if ($args.Length -eq 0 -or [string]::IsNullOrWhiteSpace($args[0])) {
 
 $version = Test-Version $args[0]
 
-$Used_Version_Dir = Join-Path $PSScriptRoot "..\python" $version
+$CONFIG = Get-Config
+
+$Used_Version_Dir = $CONFIG | Select-Object -ExpandProperty Python_Dir | Join-Path -ChildPath $version
 
 $pythonInfo = Get-Python $Used_Version_Dir
 
-if (-not $pythonInfo.IsValid) {
+if (-not $pythonInfo.IsValid -and $null -eq $pythonInfo.Version) {
     Write-Host "Version $version is not installed" -ForegroundColor Red
     exit 1
 }
 
 
-$Current_Version_Dir = Join-Path $PSScriptRoot "..\python\current"
+$Current_Dir = $CONFIG | Select-Object -ExpandProperty Current_Dir
 
-New-Item -ItemType Junction -Path $Current_Version_Dir -Value $Used_Version_Dir -Force | Out-Null
+New-Item -ItemType Junction -Path $Current_Dir -Value $Used_Version_Dir -Force | Out-Null
 
 Write-Host "Now using Python v$version (64-bit)"
 

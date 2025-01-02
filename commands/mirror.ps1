@@ -8,6 +8,7 @@ else {
   if ($mirror_url -match "^(http|https)://.*") {
     $mirror_url | Out-Null
 
+    $ProgressPreference = "SilentlyContinue"
     $reachable = Invoke-WebRequest -Uri $mirror_url -UseBasicParsing -Method Head -TimeoutSec 5 -ErrorAction SilentlyContinue
 
     if ($reachable.StatusCode -eq 200) {
