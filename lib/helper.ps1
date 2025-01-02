@@ -163,6 +163,7 @@ function Expand-MsiArchive {
     $DestinationPath = (Split-Path $Path)
   )
   $DestinationPath = $DestinationPath.TrimEnd('\')
+  $DestinationPath = Join-Path $(Get-Target -Path (Split-Path $DestinationPath)) $(fname $DestinationPath)
 
   $proc = Start-Process -FilePath "msiexec.exe" -ArgumentList @(
     '/a',
