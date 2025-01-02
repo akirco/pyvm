@@ -10,7 +10,7 @@ $version = Test-Version $args[0]
 
 $CONFIG = Get-Config
 
-$Used_Version_Dir = $CONFIG | Select-Object -ExpandProperty Python_Dir | Join-Path -ChildPath $version
+$Used_Version_Dir = $CONFIG | Select-Object -ExpandProperty Version_Dir | Join-Path -ChildPath $version
 
 $pythonInfo = Get-Python $Used_Version_Dir
 

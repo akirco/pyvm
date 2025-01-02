@@ -1,7 +1,9 @@
+. $PSScriptRoot\..\lib\helper.ps1
+
 $mirror_url = $args[0]
 
 if ($null -eq $args[0] -or $args[0] -eq "") {
-  $mirror_url = [Environment]::GetEnvironmentVariable("Python_Mirror", "User")
+  $mirror_url = Get-Config | Select-Object -ExpandProperty Python_Mirror
   Write-Host "Current Python Mirror URL: $mirror_url"
 }
 else {

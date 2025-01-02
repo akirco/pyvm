@@ -13,7 +13,7 @@ function Get-Remote {
     $groupedVersions = $versions | Group-Object { $_.Split('.')[0] }
 
     foreach ($group in $groupedVersions) {
-        Write-Host "$($group.Name).x:" -ForegroundColor Cyan
+        Write-Host "Version $($group.Name).x:" -ForegroundColor Cyan
 
         $table = @()
         $row = @()

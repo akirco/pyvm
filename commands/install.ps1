@@ -10,7 +10,7 @@ $version = Test-Version $args[0] -Install
 
 $CONFIG = Get-Config
 
-$installed_dir = $CONFIG | Select-Object -ExpandProperty Python_Dir | Join-Path -ChildPath $version
+$installed_dir = $CONFIG | Select-Object -ExpandProperty Version_Dir | Join-Path -ChildPath $version
 
 $caches_dir = $CONFIG | Select-Object -ExpandProperty Cache_Dir
 
@@ -31,10 +31,11 @@ try {
     $X64_Url = Repair-Url $download_mirror "$version/$X64_Name"
 
     if (-not (Test-Path $Cached_Version_Path)) {
-        Write-Host "Downloading Python version $version (64-bit)..."
+        Write-Host "Downloading Python version $version (64-bit)..." -NoNewline
         if (-not (Get-RemoteFile -Url $X64_Url -OutFile $Cached_Version_Path)) {
             throw "Failed to download Python $version"
         }
+        Write-Host "ok" -ForegroundColor Green
 
         Write-Host "Verifying file signature..."
         if (-not (Test-Signature -FilePath $Cached_Version_Path -Version $version -DownloadMirror $download_mirror)) {
@@ -55,7 +56,7 @@ try {
         throw "Downloaded file not found at $Cached_Version_Path"
     }
 
-    Write-Host "Extracting Python installer..."
+    Write-Host "Extracting Python installer..." -NoNewline
 
     Expand-DarkArchive $Cached_Version_Path $tmp_dir
 
@@ -74,9 +75,12 @@ try {
         Expand-MsiArchive $msiFile.FullName $installed_dir
     }
 
-    Write-Host "Installing pip..."
+    Write-Host "ok" -ForegroundColor Green
+    Write-Host "Installing pip..." -NoNewline
 
     Get-Pip $version
+
+    Write-Host "ok" -ForegroundColor Green
 
     Write-Host "Python $version has been successfully installed." -ForegroundColor Green
     Write-Host "If you want to use this version, type:" -ForegroundColor Green

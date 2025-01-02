@@ -20,7 +20,7 @@ $venvPath = if ($args.Length -gt 1) { $args[1] } else {
 
 
 # Verify the Python version
-$pythonInfo = Get-Python -PythonPath (Get-Config | Select-Object -ExpandProperty Python_Dir | Join-Path -ChildPath $version)
+$pythonInfo = Get-Python -PythonPath (Get-Config | Select-Object -ExpandProperty Version_Dir | Join-Path -ChildPath $version)
 if (-not $pythonInfo.IsValid) {
   Write-Host "Python $version is not valid or not installed." -ForegroundColor Red
   exit 1

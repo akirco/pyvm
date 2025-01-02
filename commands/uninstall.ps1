@@ -17,7 +17,7 @@ $installed_versions = Get-InstalledPython | ForEach-Object {
 
 $CONFIG = Get-Config
 
-$version_dir = $CONFIG | Select-Object -ExpandProperty Python_Dir | Join-Path -ChildPath $version
+$version_dir = $CONFIG | Select-Object -ExpandProperty Version_Dir | Join-Path -ChildPath $version
 
 $current_dir = $CONFIG | Select-Object -ExpandProperty Current_Dir
 
@@ -25,14 +25,11 @@ $current_dir = $CONFIG | Select-Object -ExpandProperty Current_Dir
 if ($installed_versions -contains $version) {
   Write-Host "Uninstalling Python $version..." -ForegroundColor Cyan
   try {
-
-    Remove-Item -Path $version_dir -Recurse -Force -ErrorAction Ignore
-
     $is_currnet = Test-IsUsing $version
-
     if ($is_currnet) {
       Remove-Item $current_dir -Recurse -Force -ErrorAction Ignore
     }
+    Remove-Item -Path $version_dir -Recurse -Force -ErrorAction Ignore
   }
   catch {
     Write-Host "Failed to uninstall Python $version." -ForegroundColor Red
@@ -44,6 +41,6 @@ if ($installed_versions -contains $version) {
   }
 }
 else {
-  Write-Host "Python $version is not installed. Type "pyvm list" to see what is installed." -ForegroundColor Yellow
+  Write-Host "Python $version is not installed. Type 'pyvm list' to see what is installed." -ForegroundColor Yellow
 }
 

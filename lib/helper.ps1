@@ -50,7 +50,7 @@ function Get-Config {
     Venv_Dir      = Repair-Path -Path $(Join-Path $Root_Path "python\venvs")
     Current_Dir   = Repair-Path -Path $(Join-Path $Root_Path "python\current")
     Cache_Dir     = Repair-Path -Path $(Join-Path $Root_Path "python\caches")
-    Version_Dir   = Repair-Path -Path $(Join-Path $Root_Path "python\$version")
+    Version_Dir   = Repair-Path -Path $(Join-Path $Root_Path "python\versions")
     Tmp_Dir       = Repair-Path -Path $(Join-Path $Root_Path "python\tmp")
   }
   return $CONFIG
@@ -282,7 +282,7 @@ function Get-Python {
 
 function Get-InstalledPython {
   try {
-    $pythonDir = Get-Config | Select-Object -ExpandProperty Python_Dir
+    $pythonDir = Get-Config | Select-Object -ExpandProperty Version_Dir
     $versions = Get-ChildItem $pythonDir -Directory -ErrorAction Ignore | Where-Object { $_.Name -match '^\d+\.\d+\.\d+$' }
     if (-not $versions) {
       return @()
@@ -321,7 +321,7 @@ function Get-Pip {
     [string]$Version
   )
 
-  $pythonInfo = Get-Python -PythonPath (Get-Config | Select-Object -ExpandProperty Python_Dir | Join-Path -ChildPath $Version)
+  $pythonInfo = Get-Python -PythonPath (Get-Config | Select-Object -ExpandProperty Version_Dir | Join-Path -ChildPath $Version)
   if (-not $pythonInfo.IsValid) {
     Write-Host "Python $Version is not valid" -ForegroundColor Red
     exit 1
@@ -464,8 +464,8 @@ function Test-RunningProcesses {
   param(
     [string]$Version
   )
-  $pyexe = Get-Config | Select-Object -ExpandProperty Python_Dir | Join-Path -ChildPath $Version | Join-Path -ChildPath "python.exe"
-  $pipexe = Get-Config | Select-Object -ExpandProperty Python_Dir | Join-Path -ChildPath $Version | Join-Path -ChildPath "Scripts\pip.exe"
+  $pyexe = Get-Config | Select-Object -ExpandProperty Version_Dir | Join-Path -ChildPath $Version | Join-Path -ChildPath "python.exe"
+  $pipexe = Get-Config | Select-Object -ExpandProperty Version_Dir | Join-Path -ChildPath $Version | Join-Path -ChildPath "Scripts\pip.exe"
   $runningProcesses = Get-Process | Where-Object { $_.Path -eq $pyexe } -ErrorAction SilentlyContinue
   $runningProcesses += Get-Process | Where-Object { $_.Path -eq $pipexe } -ErrorAction SilentlyContinue
   if ($runningProcesses) {
