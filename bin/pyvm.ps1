@@ -18,19 +18,19 @@ function exec($cmd, $arguments) {
 
 $commands = [string[]]$(Get-ChildItem $commandsPath).BaseName
 function Show-VersionInfo {
-  Write-Host "v0.1.0" -f DarkBlue
+  Write-Host "version: 0.1.1" -f DarkBlue
 }
 
 
 switch ($subCommand) {
 
-    ({ $subCommand -in @($null, '-h', '--help','/?') }) {
+    ({ $subCommand -in @($null, '-h', '--help', '/?') }) {
     exec 'help'
   }
     ({ $subCommand -in @('-v', '--version') }) {
-    Show-VersionInfo      
+    Show-VersionInfo
   }
-  
+
     ({ $subCommand -in ($commands) }) {
     [string[]]$arguments = $Args | Select-Object -Skip 1
     if ($null -ne $arguments -and $arguments[0] -in @('-h', '--help', '/?')) {
