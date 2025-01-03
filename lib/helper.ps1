@@ -162,6 +162,7 @@ function Expand-MsiArchive {
     [String]
     $DestinationPath = (Split-Path $Path)
   )
+  $Path = Join-Path $(Get-Target -Path (Split-Path $Path)) $(fname $Path)
   $DestinationPath = $DestinationPath.TrimEnd('\')
   $DestinationPath = Join-Path $(Get-Target -Path (Split-Path $DestinationPath)) $(fname $DestinationPath)
 
