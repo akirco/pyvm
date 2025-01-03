@@ -54,7 +54,7 @@ function Get-Remote {
                 if ($majorVersion -eq 2) {
                     if ($versionResponse.Content -match "python-$version\.amd64\.msi") {
                         $versions += @{
-                            version = $version
+                            version       = $version
                             installerType = "msi"
                         }
                     }
@@ -62,7 +62,7 @@ function Get-Remote {
                 else {
                     if ($versionResponse.Content -match "python-$version-amd64\.exe") {
                         $versions += @{
-                            version = $version
+                            version       = $version
                             installerType = "exe"
                         }
                     }
@@ -95,7 +95,7 @@ function Get-Remote {
             $row += "| $($versionInfo.version.PadRight(7))"
             $count++
 
-            if ($count -eq 6) {
+            if ($count -eq 8) {
                 $table += , $row
                 $row = @()
                 $count = 0
@@ -103,7 +103,7 @@ function Get-Remote {
         }
 
         if ($row.Count -gt 0) {
-            while ($row.Count -lt 6) {
+            while ($row.Count -lt 8) {
                 $row += "|        "
             }
             $table += , $row
