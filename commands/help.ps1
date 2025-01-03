@@ -37,8 +37,9 @@ function Show-ListHelp {
     Write-Host "  pyvm list [options]" -f Black
     Write-Host ""
     Write-Host "Options:" -f Black
-    Write-Host "  --remote     Show installable remote versions"
-    Write-Host "  --local      Show installed local versions (default)"
+    Write-Host "  --remote          Show installable remote versions"
+    Write-Host "  --remote-refresh  Refresh the remote versions cache"
+    Write-Host "  --local           Show installed local versions (default)"
 }
 
 function Show-VenvHelp {

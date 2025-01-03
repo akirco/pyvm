@@ -165,12 +165,17 @@ function Expand-MsiArchive {
   $DestinationPath = $DestinationPath.TrimEnd('\')
   $DestinationPath = Join-Path $(Get-Target -Path (Split-Path $DestinationPath)) $(fname $DestinationPath)
 
+  $expand_log = Get-Config | Select-Object -ExpandProperty Logs_Dir | Join-Path -ChildPath "expand_msi.log"
+  New-Item -Path $expand_log -ItemType File -Force | Out-Null
+  $expand_error_log = Get-Config | Select-Object -ExpandProperty Logs_Dir | Join-Path -ChildPath "expand_msi_error.log"
+  New-Item -Path $expand_error_log -ItemType File -Force | Out-Null
+
   $proc = Start-Process -FilePath "msiexec.exe" -ArgumentList @(
     '/a',
     $Path,
     '/qn',
-    "TARGETDIR=$(Resolve-Path $DestinationPath)"
-  ) -NoNewWindow -PassThru -Wait
+    "TARGETDIR=$DestinationPath"
+  ) -NoNewWindow -PassThru -Wait -RedirectStandardError $expand_error_log -RedirectStandardOutput $expand_log
 
   if ($proc.ExitCode -ne 0) {
     throw "Failed to extract MSI file. Exit code: $($proc.ExitCode)"
@@ -486,4 +491,31 @@ function Test-IsUsing {
     return $true
   }
   return $false
+}
+
+function Get-InstallerName {
+  param (
+    [string]$version
+  )
+  $versions = Get-Config | Select-Object -ExpandProperty Cache_Dir | Join-Path -ChildPath "versions.json"
+  if (-not (Test-Path $versions)) {
+    $MajorVersion = $version.Split('.')[0]
+    if ($MajorVersion -eq "2") {
+      return "python-$version.amd64.msi"
+    }
+    return "python-$version-amd64.exe"
+  }
+  $json = Get-Content $versions | ConvertFrom-Json
+
+  $version_info = $json.versions | Where-Object { $_.version -eq $version }
+
+  $installer_name = if ($version_info.installerType -eq "msi") {
+    "python-$version.amd64.msi"
+  }
+  else {
+    "python-$version-amd64.exe"
+  }
+
+  return $installer_name
+
 }

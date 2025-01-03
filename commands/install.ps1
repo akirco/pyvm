@@ -25,10 +25,12 @@ $download_mirror = $CONFIG | Select-Object -ExpandProperty Python_Mirror
     }
 }
 
+
+
 try {
-    $X64_Name = "python-$version-amd64.exe"
-    $Cached_Version_Path = Join-Path $caches_dir $X64_Name
-    $X64_Url = Repair-Url $download_mirror "$version/$X64_Name"
+    $python_installer = Get-InstallerName $version
+    $Cached_Version_Path = Join-Path $caches_dir $python_installer
+    $X64_Url = Repair-Url $download_mirror "$version/$python_installer"
 
     if (-not (Test-Path $Cached_Version_Path)) {
         Write-Host "Downloading Python version $version (64-bit)..." -NoNewline
@@ -58,21 +60,33 @@ try {
 
     Write-Host "Extracting Python installer..." -NoNewline
 
-    Expand-DarkArchive $Cached_Version_Path $tmp_dir
+    # check installer is .exe or .msi ,use switch
+    $ext = (Get-Item $Cached_Version_Path).Extension
+    switch ($ext) {
+        ".exe" {
+            Expand-DarkArchive $Cached_Version_Path $tmp_dir
 
-    @('path.msi', 'pip.msi') | ForEach-Object {
-        $msiPath = Join-Path $tmp_dir "AttachedContainer\$_"
-        if (Test-Path $msiPath) {
-            Remove-Item $msiPath -Force
+            @('path.msi', 'pip.msi') | ForEach-Object {
+                $msiPath = Join-Path $tmp_dir "AttachedContainer\$_"
+                if (Test-Path $msiPath) {
+                    Remove-Item $msiPath -Force
+                }
+            }
+
+            # Write-Host "Installing Python components..."
+            $msiFiles = Get-ChildItem (Join-Path $tmp_dir "AttachedContainer\*.msi")
+
+            foreach ($msiFile in $msiFiles) {
+                if ($msiFile.BaseName -eq 'appendpath') { continue }
+                Expand-MsiArchive $msiFile.FullName $installed_dir
+            }
         }
-    }
-
-    # Write-Host "Installing Python components..."
-    $msiFiles = Get-ChildItem (Join-Path $tmp_dir "AttachedContainer\*.msi")
-
-    foreach ($msiFile in $msiFiles) {
-        if ($msiFile.BaseName -eq 'appendpath') { continue }
-        Expand-MsiArchive $msiFile.FullName $installed_dir
+        ".msi" {
+            Expand-MsiArchive $Cached_Version_Path $installed_dir
+        }
+        default {
+            throw "Unsupported file extension: $ext"
+        }
     }
 
     Write-Host "ok" -ForegroundColor Green
@@ -88,7 +102,9 @@ try {
     Write-Host "  pyvm use $version" -ForegroundColor Green
 }
 catch {
-    Write-Host "Error during installation: $_" -ForegroundColor Red
+    Write-Host "`nError during installation: $_" -ForegroundColor Red
+    Write-Host "Please type 'pyvm list --remote' to fetch installable versions." -NoNewline
+
     if (Test-Path $installed_dir) {
         Remove-Item $installed_dir -Recurse -Force -ErrorAction SilentlyContinue
     }
